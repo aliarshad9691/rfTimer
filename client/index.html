@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RF Timer Script</title>
+	<link rel="stylesheet" type="text/css" href="js/bootstrap/dist/css/bootstrap.min.css">
+	<script type="text/javascript" src="js/socket.io-client/dist/socket.io.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<script>
+	  // var socket = io("192.168.1.25:3000");
+	  var socket = io("127.0.0.1:3000");
+	  // $('form').submit(function(){
+	  
+	  var startTimer = function(){
+	  	document.getElementById("buttonStart").setAttribute("style","display:none");
+	  	document.getElementById("buttonStop").setAttribute("style","display:block");
+	  	socket.emit('start');
+
+	  }
+
+	  var stopTimer = function(){
+	  	socket.emit('stop');
+	  }
+
+	  socket.on('update', function(msg){
+	  	
+
+		var date = new Date(null);
+		date.setSeconds(msg/1000); // specify value for SECONDS here
+		var timeLeft = date.toISOString().substr(11, 8);
+		document.getElementById("time").innerHTML=timeLeft;
+
+		// document.getElementById("button").setAttribute("disabled","true");
+		document.getElementById("buttonStart").setAttribute("style","display:none");
+	  	document.getElementById("buttonStop").setAttribute("style","display:block");
+	  });
+
+	  socket.on('stop', function(msg){
+	    document.getElementById("buttonStart").setAttribute("style","display:block");
+	  	document.getElementById("buttonStop").setAttribute("style","display:none");
+	  });
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="well">
+					<center>
+						<span id="time">00:00:00</span>
+						<button id='buttonStart' class="btn btn-success btn-block" onclick="startTimer()">Start</button>
+						<button style="display:none;" id='buttonStop' class="btn btn-success btn-block" onclick="stopTimer()">Stop</button>
+					</center>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
